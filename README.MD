@@ -1,9 +1,7 @@
-# Deploy cojure to the cloud
+# Deploy anything to the cloud
 ============================
 
-This repository deployes an example application to any cloud provider  using the ansible board tools and apache-libcloud
-
-[your repository](https://github.com/ThoughtWorksInc/infra-problem) is used for the deployment. The build happends with each run.
+This repository deployes an example (python or java) application to google cloud engine using the ansible board tools and apache-libcloud
 
 ### AWS is yet not implemented but easy to extend
 

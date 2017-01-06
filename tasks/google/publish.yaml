@@ -1,0 +1,46 @@
+- name: include secrets
+  include_vars: .secrets/credentials.yaml
+- name: create load balancer
+  gce_lb:
+    state: present
+    credentials_file: .secrets/credentials.json
+    service_account_email: "{{ gcloud_service_account }}"
+    project_id: "{{ gcloud_project_id }}" 
+    name: "{{ application_name }}-lb"
+    region: "{{ network_zone }}"
+    protocol: tcp
+    members: ["{{ availability_zone}}/{{ item }}"]
+    httphealthcheck_name: ping
+    port_range: "{{ frontend_port }}"
+    httphealthcheck_port: "{{ frontend_port }}"
+    httphealthcheck_path: "/ping"
+    httphealthcheck_interval: 60
+    httphealthcheck_unhealthy_count: 10
+  register: lb
+  with_items:
+    - "{{ application_lb_instances }}"
+  when:
+    - ("{{ lb_public_ip }}" == "none")
+
+- name: create load balancer
+  gce_lb:
+    state: present
+    credentials_file: .secrets/credentials.json
+    service_account_email: "{{ gcloud_service_account }}"
+    project_id: "{{ gcloud_project_id }}" 
+    name: "{{ application_name }}-lb"
+    region: "{{ network_zone }}"
+    protocol: tcp
+    members: ["{{ availability_zone}}/{{ item }}"]
+    external_ip: "{{ lb_public_ip }}"
+    httphealthcheck_name: ping
+    port_range: "{{ frontend_port }}"
+    httphealthcheck_port: "{{ frontend_port }}"
+    httphealthcheck_path: "/ping"
+    httphealthcheck_interval: 60
+    httphealthcheck_unhealthy_count: 10
+  register: lb
+  with_items:
+    - "{{ application_lb_instances }}"
+  when:
+    - ("{{ lb_public_ip }}" != "none")

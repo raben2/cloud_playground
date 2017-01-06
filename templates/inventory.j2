@@ -1,0 +1,19 @@
+{% for g, i in groups.iteritems() %}
+[{{ g }}]
+{% for ip in i %}
+{{ ip }}
+{% endfor %}
+
+{% endfor %}
+{% for g, i in groups.iteritems() %}
+{% if "fe-a" in g %}
+[frontend]
+{% for ip in i %}
+{{ ip }}
+{% endfor %}
+{% elif "fe-b" in g %}
+{% for ip in i %}
+{{ ip }}
+{% endfor %}
+{% endif %}
+{% endfor %}

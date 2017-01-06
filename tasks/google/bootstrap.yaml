@@ -1,0 +1,64 @@
+- name: include secrets
+  include_vars: .secrets/credentials.yaml
+- name: "prepare credentials json"
+  copy: 
+    dest: .secrets/credentials.json
+    content: "{{ gcloud_credentials_json }}"
+- name: create stack network
+  gce_net:
+    state: present 
+    credentials_file: .secrets/credentials.json
+    service_account_email: "{{ gcloud_service_account }}"
+    project_id: "{{ gcloud_project_id }}" 
+    name: "{{ application_name }}-nw"
+    ipv4_range: "{{ application_network_range }}"
+    subnet_name: "{{ application_name }}-sn"
+    subnet_region: "{{ network_zone }}"
+    mode: custom
+- name: secure network
+  gce_net: 
+    state: present 
+    credentials_file: .secrets/credentials.json
+    service_account_email: "{{ gcloud_service_account }}"
+    project_id: "{{ gcloud_project_id }}"
+    name: "{{ application_name }}-nw"
+    fwname: "{{ application_name }}-fw" 
+    src_range: "{{ application_network_range }}"
+    allowed: "{{ application_private_access }}"
+    src_tags: ["proxy"]
+- name: allow public access
+  gce_net: 
+    state: present 
+    credentials_file: .secrets/credentials.json
+    service_account_email: "{{ gcloud_service_account }}"
+    project_id: "{{ gcloud_project_id }}"
+    name: "{{ application_name }}-nw"
+    fwname: "{{ application_name }}-public" 
+    src_range: "0.0.0.0/0"
+    allowed: "{{ application_public_access }}"
+    src_tags: ["proxy"]
+- name: "create instances"
+  gce:
+    state: present 
+    credentials_file: .secrets/credentials.json
+    service_account_email: "{{ gcloud_service_account }}"
+    project_id: "{{ gcloud_project_id }}"
+    instance_names: "{{ item }}"
+    zone: "{{ availability_zone }}"
+    image: "{{ default_image }}"
+    network: "{{ application_name }}-nw"
+    subnetwork: "{{ application_name }}-sn"
+  register: instances
+  with_items:
+    - "{{ application_instances }}"
+- name: register instance as host
+  add_host:
+    hostname: "{{ item.public_ip }}"
+    groups: ['deploy', '{{ item.name }}']
+  with_items: 
+    - "{{ instances.results[0].instance_data }}"
+    - "{{ instances.results[1].instance_data }}"
+    - "{{ instances.results[2].instance_data }}"
+- debug: msg="{{ item }}"
+  with_items:
+    - "{{ groups }}"

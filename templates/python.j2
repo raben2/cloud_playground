@@ -1,0 +1,18 @@
+[Unit] 
+Description=static-content 
+Requires=network-online.target 
+After=network-online.target 
+
+[Service] 
+WorkingDirectory=/srv
+Restart=on-failure 
+User=root 
+Group=root 
+StandartOutput=journal
+StandartError=journal
+ExecStart=/usr/bin/python -m SimpleHTTPServer 80
+
+[Install] 
+WantedBy=multi-user.target
+
+

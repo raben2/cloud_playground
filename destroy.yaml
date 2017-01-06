@@ -1,0 +1,18 @@
+- hosts: localhost
+  connection: local
+  become: False
+  vars_files: ['defaults/main.yaml']
+  pre_tasks:
+    - name: include platform related variables
+      include_vars: 'group_vars/{{ deployment_platform }}.yaml'
+    - name: include application variables 
+      include_vars: 'group_vars/{{ application_name }}.yaml'
+  tasks:
+    - name: shutdown the stack and all resources
+      include: "tasks/{{ deployment_platform }}/shutdown.yaml"
+    - name: cleanup
+      file: 
+        state: absent
+        dest: "{{ item }}"
+      with_items:
+          - '.secrets/credentials.json'

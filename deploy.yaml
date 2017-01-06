@@ -1,0 +1,39 @@
+- hosts: all
+  connection: ssh
+  become: true
+  vars_files: ['defaults/main.yaml']
+  pre_tasks:
+    - name: include platform related variables
+      include_vars: 'group_vars/{{ deployment_platform }}.yaml'
+    - name: include application variables 
+      include_vars: 'group_vars/{{ application_name }}.yaml'
+    - name: include secrets
+      include_vars: '.secrets/credentials.yaml'
+  tasks: 
+    - name: include python tasks for static content
+      include: tasks/python_app.yaml
+      when: "{{ ansible_hostname |match('frontend') }}"
+    - name: install java
+      yum:
+        name: java-1.8.0-openjdk
+        state: installed
+    - name: upload frontend binary
+      copy:
+        src: "{{ frontend_binary }}"
+        dest: /srv/application.jar
+      when: "{{ ansible_hostname |match('fe*') }}"
+    - name: upload quotes binary
+      copy:
+        src: "{{ backend_binary }}"
+        dest: /srv/application.jar
+      when: "{{ ansible_hostname |match('backend') }}"
+    - name: write systemd file
+      template:
+        src: java.j2
+        dest: "/usr/lib/systemd/system/{{ ansible_hostname }}.service"
+    - name: enable static content service
+      systemd:
+        name: "{{ ansible_hostname }}"
+        state: started
+        enabled: yes
+        daemon_reload: yes

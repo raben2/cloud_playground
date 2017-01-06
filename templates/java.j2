@@ -1,0 +1,29 @@
+[Unit] 
+Description={{ ansible_hostname }}
+Requires=network-online.target 
+After=network-online.target 
+
+[Service]
+{% if ansible_hostname| match('fe*') %}
+{% for item in frontend_environment %}
+{% for k, v in item.iteritems() %}
+Environment={{ k }}={{ v }}
+{% endfor %}
+{% endfor %}
+{% endif %}
+StandardOutput=journal
+StandardError=journal
+WorkingDirectory=/srv
+Restart=on-failure 
+User=root 
+Group=root
+ExecStart=/bin/java \
+	    -Djava.net.preferIPv4Stack=true \
+		-jar /srv/application.jar
+ExecReload=/bin/kill -HUP $MAINPID 
+ExecStop=/bin/kill -HUP $MAINPID
+
+[Install] 
+WantedBy=multi-user.target
+
+

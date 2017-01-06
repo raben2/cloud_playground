@@ -1,0 +1,38 @@
+- name: install linux requirements
+  pip:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - "{{ pip_requirements }}"
+  when:
+    - ("{{ ansible_os_family }}" != "Darwin")
+  become: True
+- name: install OSX requirements
+  homebrew:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - "{{ pip_requirements }}"
+  when:
+    - ("{{ ansible_os_family }}" == "Darwin")
+  become: True
+- name: install leiningen binary
+  uri: 
+    url: "{{ leiningen_binary }}"
+    dest: "{{ local_bin_dir }}/lein"
+    mode: 0770
+    creates: "{{ local_bin_dir }}/lein"
+- name: checkout application
+  git:
+    repo: "{{ application_repository }}"
+    dest: "{{ local_checkout_dir }}/{{ application_name }}"
+- name: build libs
+  command: make libs 
+  args:
+    chdir: "{{ local_checkout_dir }}/{{ application_name }}"
+- name: build application
+  command: make clean all
+  args:
+    chdir: "{{ local_checkout_dir }}/{{ application_name }}"
+    creates: "{{ quotes_binary }}"
+  register: jars

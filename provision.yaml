@@ -1,0 +1,24 @@
+- hosts: all
+  connection: ssh
+  gather_facts: True
+  become: True
+  vars_files: ['defaults/main.yaml']
+  vars:
+    user: georg
+    passphrase: horst
+    name: Georg Rabenstein
+    email: rabensteingeorg@gmail.com
+  pre_tasks:
+    - name: include platform related variables
+      include_vars: 'group_vars/{{ deployment_platform }}.yaml'
+    - name: include application variables 
+      include_vars: 'group_vars/{{ application_name }}.yaml'
+    - name: include secrets
+      include_vars: '.secrets/credentials.yaml'
+  tasks:
+    - name: include os specific setup files
+      include: "tasks/{{ ansible_os_family }}/setup.yaml"
+    - name: include frontend specific setup
+      include: "tasks/frontend/setup.yaml"
+      when: 
+        - "{{ ansible_hostname |match('fe*') }}"

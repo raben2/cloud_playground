@@ -1,0 +1,14 @@
+- name: create index.html
+  copy:
+    dest: /srv/index.html
+    content: "Hello World"
+- name: create webserver app
+  template:
+    src: python.j2
+    dest: "/usr/lib/systemd/system/{{ application_name }}.service"
+- name: enable webserver
+  systemd:
+    name: "{{ application_name }}"
+    state: started
+    enabled: yes
+    daemon_reload: yes

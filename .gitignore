@@ -1,0 +1,5 @@
+.secrets/*key
+hosts
+.secrets/*json
+*.retry
+*sublime*

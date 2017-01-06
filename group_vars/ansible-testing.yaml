@@ -1,0 +1,16 @@
+application_public_access: 'tcp:22;udp:22;tcp:80'
+application_private_access: 'tcp:80,8080'
+application_network_range: '10.10.10.0/24'
+application_instances:
+    - backend
+    - fe-a
+    - fe-b
+application_lb_instances: 
+    - fe-a
+    - fe-b
+frontend_port: 80
+backend_port: 8080
+application_build_local: False
+application_dependencies: ['net-tools', 'htop', 'python', 'python-setuptools', 'python-pip'] 
+application_backend_python_pkgs: ['apache-libcloud', 'python-gnupg', 'python-consul',  'pip', 'yumrepos']
+application_frontend_python_pkgs: ['python-consul', 'pip', 'yumrepos']

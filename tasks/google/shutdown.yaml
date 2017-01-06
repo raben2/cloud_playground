@@ -1,0 +1,58 @@
+- name: include secrets
+  include_vars: .secrets/credentials.yaml
+- name: "prepare credentials json"
+  copy: 
+    dest: .secrets/credentials.json
+    content: "{{ gcloud_credentials_json }}"
+- name: destroy instances
+  gce:
+    state: deleted 
+    credentials_file: .secrets/credentials.json
+    service_account_email: "{{ gcloud_service_account }}"
+    project_id: "{{ gcloud_project_id }}"
+    instance_names: "{{ item }}"
+    zone: "{{ availability_zone }}"
+  with_items:
+    - "{{ application_instances }}"
+- name: delete load balancer
+  gce_lb:
+    state: absent
+    credentials_file: .secrets/credentials.json
+    service_account_email: "{{ gcloud_service_account }}"
+    project_id: "{{ gcloud_project_id }}" 
+    name: "{{ application_name }}-lb"
+- name: shutdown network
+  gce_net:
+    state: absent 
+    credentials_file: .secrets/credentials.json
+    service_account_email: "{{ gcloud_service_account }}"
+    project_id: "{{ gcloud_project_id }}"
+    name: "{{ application_name }}-nw"
+    ipv4_range: "{{ application_network_range }}"
+    subnet_name: "{{ application_name }}-sn"
+    subnet_region: "{{ network_zone }}"
+    mode: custom
+- name: shutdown firewall
+  gce_net:
+    state: absent 
+    credentials_file: .secrets/credentials.json
+    service_account_email: "{{ gcloud_service_account }}"
+    project_id: "{{ gcloud_project_id }}"
+    name: "{{ application_name }}-nw"
+    fwname: "{{ application_name }}-fw" 
+    ipv4_range: "{{ application_network_range }}"
+    subnet_name: "{{ application_name }}-sn"
+    subnet_region: "{{ network_zone }}"
+    mode: custom
+- name: shutdown public firewall
+  gce_net:
+    state: absent 
+    credentials_file: .secrets/credentials.json
+    service_account_email: "{{ gcloud_service_account }}"
+    project_id: "{{ gcloud_project_id }}"
+    name: "{{ application_name }}-nw"
+    fwname: "{{ application_name }}-public" 
+    ipv4_range: "{{ application_network_range }}"
+    subnet_name: "{{ application_name }}-sn"
+    subnet_region: "{{ network_zone }}"
+    mode: custom

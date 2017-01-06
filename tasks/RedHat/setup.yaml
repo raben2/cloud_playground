@@ -1,0 +1,30 @@
+- name: install epel
+  yum:
+    name: epel-release
+    state: installed
+    update_cache: True
+
+- name: install dependencies
+  yum: 
+    name: "{{ item }}"
+    state: installed
+    update_cache: True
+  with_items:
+      - "{{ application_dependencies }}"
+
+- name: install pip packages
+  pip:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+      - "{{ application_backend_python_pkgs }}"
+  when:
+      - "{{ ansible_hostname |match('backend') }}"
+- name: install pip packages
+  pip:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+      - "{{ application_frontend_python_pkgs }}"
+  when:
+      - "{{ ansible_hostname |match('fe*') }}"

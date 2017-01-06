@@ -1,0 +1,9 @@
+application_repository: 'https://github.com/ThoughtWorksInc/infra-problem.git'
+application_name: ansible-testing
+application_build_local: True
+local_checkout_dir: /usr/src
+local_bin_dir: /usr/local/bin
+deployment_platform: google # other platforms have to be implemented
+lb_public_ip: none
+leiningen_binary: https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein
+pip_requirements: ['apache-libcloud']

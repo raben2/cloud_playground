@@ -1,0 +1,5 @@
+availability_zone: europe-west1-c
+network_zone: europe-west1
+instance_type: n1-standart-2
+default_image: centos-7-v20161212
+

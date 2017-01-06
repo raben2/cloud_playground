@@ -18,7 +18,7 @@ gcloud_credentials_json: |
   ${google json goes here}
   }
 
-application_newsfeed_token: ${application-secrets}
+application_secret: ${application-secrets}
 ````
 
 ## Creating a stack

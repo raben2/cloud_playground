@@ -16,3 +16,4 @@
         dest: "{{ item }}"
       with_items:
           - '.secrets/credentials.json'
+          - 'hosts'

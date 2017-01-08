@@ -9,7 +9,7 @@
     name: "{{ application_name }}-lb"
     region: "{{ network_zone }}"
     protocol: tcp
-    members: ["{{ availability_zone}}/{{ item }}"]
+    members: ["{{ availability_zone}}/{{ application_lb_instances[0] }}", "{{ availability_zone }}/{{ application_lb_instances[1] }}"]
     httphealthcheck_name: ping
     port_range: "{{ frontend_port }}"
     httphealthcheck_port: "{{ frontend_port }}"
@@ -17,8 +17,6 @@
     httphealthcheck_interval: 60
     httphealthcheck_unhealthy_count: 10
   register: lb
-  with_items:
-    - "{{ application_lb_instances }}"
   when:
     - ("{{ lb_public_ip }}" == "none")
 

@@ -7,6 +7,10 @@
       include_vars: 'group_vars/{{ deployment_platform }}.yaml'
     - name: include application variables 
       include_vars: 'group_vars/{{ application_name }}.yaml'
+    - name: clean out the hosts file
+      file:
+        state: absent
+        dest: ./hosts
   tasks:
     - name: prepare the system and build the application
       include: tasks/build.yaml
@@ -20,21 +24,9 @@
       template:
         src: inventory.j2
         dest: ./hosts
-        
-- hosts: localhost
-  connection: local
-  gather_facts: True
-  vars_files: ['defaults/main.yaml']
-  pre_tasks:
-    - name: include platform related variables
-      include_vars: 'group_vars/{{ deployment_platform }}.yaml'
-    - name: include application variables 
-      include_vars: 'group_vars/{{ application_name }}.yaml'
-  tasks:
     - name: cleanup
       file: 
         state: absent
         dest: "{{ item }}"
       with_items:
           - '.secrets/credentials.json'
- 

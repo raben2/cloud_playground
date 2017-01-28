@@ -1,0 +1,15 @@
+ name: "create instances"
+  gce:
+    state: present 
+    credentials_file: .secrets/credentials.json
+    service_account_email: "{{ gcloud_service_account }}"
+    project_id: "{{ gcloud_project_id }}"
+    instance_names: "{{ item }}"
+    zone: "{{ availability_zone }}"
+    image: "{{ default_image }}"
+    network: "{{ application_name }}-nw"
+    subnetwork: "{{ application_name }}-sn"
+    metadata: "{'cloud-config': '{{ coreos_cloud_config }}'}"
+  register: instances
+  with_items:
+    - "{{ application_instances }}"

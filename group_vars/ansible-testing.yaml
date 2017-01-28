@@ -11,6 +11,6 @@ application_lb_instances:
 frontend_port: 80
 backend_port: 8080
 application_build_local: False
-application_dependencies: ['net-tools', 'htop', 'python', 'python-setuptools', 'python-pip'] 
+application_dependencies: ['net-tools', 'htop', 'python', 'python-setuptools', 'python-pip', 'git'] 
 application_backend_python_pkgs: ['apache-libcloud', 'python-gnupg', 'python-consul',  'pip', 'yumrepos']
 application_frontend_python_pkgs: ['python-consul', 'pip', 'yumrepos']

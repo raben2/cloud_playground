@@ -1,6 +1,7 @@
 application_repository: 'https://github.com/ThoughtWorksInc/infra-problem.git'
 application_name: ansible-testing
-application_build_local: True
+application_build_local: False
+debug_mode: True
 local_checkout_dir: /usr/src
 local_bin_dir: /usr/local/bin
 deployment_platform: google # other platforms have to be implemented

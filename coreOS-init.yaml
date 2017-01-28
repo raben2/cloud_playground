@@ -1,0 +1,9 @@
+- hosts: deploy
+  connection: ssh
+  gather_facts: False
+  vars_files: ['defaults/main.yaml']
+  tasks:
+    - name: run the provided init script
+      raw: "/bin/bash /home/core/py.sh"
+      when: 
+       - ("{{ default_image |match('coreos*')")

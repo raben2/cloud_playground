@@ -2,6 +2,7 @@
   connection: ssh
   gather_facts: True
   become: True
+  serial: 5
   vars_files: ['defaults/main.yaml']
   vars:
     user: georg
@@ -22,3 +23,5 @@
       include: "tasks/frontend/setup.yaml"
       when: 
         - "{{ ansible_hostname |match('fe*') }}"
+  roles:
+      - {role: golang }

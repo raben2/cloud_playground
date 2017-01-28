@@ -49,8 +49,18 @@
     network: "{{ application_name }}-nw"
     subnetwork: "{{ application_name }}-sn"
   register: instances
+  when:
+    - "{{ default_image |match ('centos*') }}"
   with_items:
     - "{{ application_instances }}"
+
+- debug: msg="{{ instances.results[0] }}"
+
+- name: start coreOS instances
+  include: coreos.yaml
+  when: 
+    - "{{ default_image |match ('coreos*') }}"
+
 - name: register instance as host
   add_host:
     hostname: "{{ item.public_ip }}"
